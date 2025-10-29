@@ -1,22 +1,15 @@
 import { Elysia } from 'elysia';
 
 // Plugin de logging global
-export const loggerPlugin = new Elysia({
-  name: 'logger',
-})
+export const loggerPlugin = new Elysia({ name: 'logger' })
   .onRequest(({ request }) => {
     console.log(`📨 ${request.method} ${new URL(request.url).pathname}`);
   })
-  .onResponse(({ request, set }) => {
+  .onAfterHandle(({ request, response }) => {
     const url = new URL(request.url);
-    const status = set.status || 200;
-    const statusEmoji = status >= 400 ? '❌' : status >= 300 ? '↩️' : '✅';
-    
-    console.log(
-      `${statusEmoji} ${request.method} ${url.pathname} - ${status} - ${Date.now()}ms`
-    );
+    console.log(`✅ ${request.method} ${url.pathname}`);
   })
-  .onError(({ code, error, set }) => {
+  .onError(({ code, error }) => {
     console.error(`💥 Error [${code}]:`, error.message);
     
     return {
