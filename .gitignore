@@ -4,6 +4,7 @@ bun.lockb
 
 # Environment
 .env
+.env.example
 .env.local
 .env.*.local
 
