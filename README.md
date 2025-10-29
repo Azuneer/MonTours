@@ -384,7 +384,7 @@ ISC
 
 ## 👨‍💻 Auteur
 
-Développé avec ❤️ pour la ville de Tours
+Développé par moi (Ewen), à l'aide Claude Code (il m'a beaucoup aidé, honnêtement), avec ❤️ pour la ville de Tours
 
 ---
 
