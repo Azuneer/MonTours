@@ -7,6 +7,7 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
   APP_NAME: z.string().default('MonTours API'),
   APP_VERSION: z.string().default('1.0.0'),
+  INSEE_API_KEY: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

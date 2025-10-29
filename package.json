@@ -18,7 +18,10 @@
     "docker:clean": "docker-compose down -v",
     "test": "bun test",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:seed": "bun src/scripts/seed.ts",
+    "db:import-insee": "bun src/scripts/import-insee.ts",
+    "db:test-insee": "bun src/scripts/test-insee.ts"
   },
   "keywords": ["elysia", "bun", "api", "tours", "companies", "map"],
   "author": "",
