@@ -1,0 +1,39 @@
+{
+  "name": "@montours/backend",
+  "version": "1.0.0",
+  "description": "API pour cartographier les entreprises IT de Tours",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:migrate": "drizzle-kit push:pg",
+    "db:studio": "drizzle-kit studio",
+    "db:drop": "drizzle-kit drop",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:restart": "docker-compose restart",
+    "docker:rebuild": "docker-compose down && docker-compose up -d --build",
+    "docker:clean": "docker-compose down -v",
+    "test": "bun test",
+    "db:seed": "bun src/scripts/seed.ts",
+    "db:import-insee": "bun src/scripts/import-insee.ts",
+    "db:test-insee": "bun src/scripts/test-insee.ts"
+  },
+  "keywords": ["elysia", "bun", "api", "tours", "companies", "map"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@elysiajs/cors": "latest",
+    "@elysiajs/swagger": "latest",
+    "drizzle-orm": "latest",
+    "elysia": "latest",
+    "postgres": "latest",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "drizzle-kit": "latest"
+  }
+}

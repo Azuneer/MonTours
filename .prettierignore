@@ -1,0 +1,7 @@
+node_modules
+dist
+drizzle
+*.lock
+bun.lockb
+.env
+.env.*

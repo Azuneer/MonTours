@@ -1,6 +1,6 @@
 import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
-import { openapi } from '@elysiajs/openapi';
+import { swagger } from '@elysiajs/swagger';
 import { env } from './config/env';
 import { healthModule } from './modules/health';
 import { companiesModule } from './modules/companies';
@@ -10,18 +10,18 @@ const app = new Elysia()
   // Métadonnées de l'app
   .state('version', env.APP_VERSION)
   .state('name', env.APP_NAME)
-  
+
   // CORS
   .use(cors({
     origin: env.CORS_ORIGIN,
     credentials: true,
   }))
-  
+
   // Logger personnalisé
   .use(loggerPlugin)
-  
-  // Documentation OpenAPI (Swagger)
-  .use(openapi({
+
+  // Documentation Swagger
+  .use(swagger({
     documentation: {
       info: {
         title: env.APP_NAME,

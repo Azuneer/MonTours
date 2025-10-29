@@ -20,7 +20,9 @@ MonTours est une application web permettant de visualiser et filtrer les entrepr
 
 ## 🏗️ Architecture
 
-### Backend
+Le projet est organisé en **monorepo** avec deux applications indépendantes :
+
+### Backend (`apps/backend`)
 - **Runtime** : [Bun](https://bun.sh) - Runtime JavaScript ultra-rapide
 - **Framework** : [Elysia](https://elysiajs.com) - Framework web TypeScript performant
 - **Base de données** : PostgreSQL 16
@@ -28,32 +30,32 @@ MonTours est une application web permettant de visualiser et filtrer les entrepr
 - **Validation** : Zod via Elysia
 - **Documentation** : OpenAPI/Swagger
 
-### Frontend _(À venir)_
-- Carte interactive avec filtres dynamiques
-- Interface utilisateur moderne et responsive
+### Frontend (`apps/frontend`)
+- **Runtime** : [Bun](https://bun.sh) avec serveur intégré et HMR
+- **UI** : [React 19](https://react.dev) - Interface utilisateur
+- **Carte** : [Leaflet](https://leafletjs.com) + [React-Leaflet](https://react-leaflet.js.org) - Cartographie interactive
+- **Styles** : [Tailwind CSS 4](https://tailwindcss.com) - Framework CSS moderne
+- **TypeScript** : Support complet avec types stricts
 
 ---
 
 ## 📦 Dépendances principales
 
-### Runtime & Framework
+### Backend
 - `bun` - Runtime JavaScript
 - `elysia` - Framework web
-- `typescript` - Support TypeScript
-
-### Base de données
 - `drizzle-orm` - ORM TypeScript
 - `drizzle-kit` - CLI pour migrations
 - `postgres` - Client PostgreSQL
-
-### API & Documentation
 - `@elysiajs/cors` - Support CORS
-- `@elysiajs/openapi` - Génération OpenAPI
 - `@elysiajs/swagger` - Interface Swagger UI
 - `zod` - Validation de schémas
 
-### Utilitaires
-- `dotenv` - Gestion des variables d'environnement
+### Frontend
+- `react` + `react-dom` - Interface utilisateur
+- `leaflet` + `react-leaflet` - Cartographie
+- `tailwindcss` - Framework CSS
+- `@types/react`, `@types/leaflet` - Types TypeScript
 
 ---
 
@@ -101,28 +103,42 @@ INSEE_API_KEY=votre_cle_api_insee
 
 ## 🎯 Démarrage
 
-### Option 1 : Avec Docker (recommandé)
+### Démarrage complet (Frontend + Backend)
 
 ```bash
-# Démarrer tous les services (PostgreSQL + API)
-bun run docker:up
+# À la racine du projet
+bun install
 
-# Voir les logs
-bun run docker:logs
+# Démarrer le backend ET le frontend en parallèle
+bun run dev
 
-# Redémarrer les services
-bun run docker:restart
-
-# Arrêter les services
-bun run docker:down
-
-# Nettoyer complètement (supprime les volumes)
-bun run docker:clean
+# Ou démarrer séparément :
+bun run dev:backend    # Backend sur http://localhost:3000
+bun run dev:frontend   # Frontend sur http://localhost:3001
 ```
 
-### Option 2 : En local
+### Backend uniquement
+
+#### Option 1 : Avec Docker (recommandé)
 
 ```bash
+cd apps/backend
+
+# Démarrer PostgreSQL
+bun run docker:up
+
+# Appliquer les migrations
+bun run db:migrate
+
+# Démarrer l'API
+bun run dev
+```
+
+#### Option 2 : En local
+
+```bash
+cd apps/backend
+
 # Démarrer PostgreSQL (via Docker)
 docker-compose up -d postgres
 
@@ -135,6 +151,17 @@ bun run dev
 
 L'API sera accessible sur `http://localhost:3000`
 
+### Frontend uniquement
+
+```bash
+cd apps/frontend
+
+# Démarrer le serveur de développement avec HMR
+bun run dev
+```
+
+Le frontend sera accessible sur `http://localhost:3001`
+
 ---
 
 ## 📊 Import des données
@@ -142,6 +169,8 @@ L'API sera accessible sur `http://localhost:3000`
 ### Importer les entreprises IT depuis l'API INSEE
 
 ```bash
+cd apps/backend
+
 # Importer toutes les entreprises IT de Tours et environs
 bun run db:import-insee
 ```
@@ -156,6 +185,7 @@ Cette commande :
 ### Tester la connexion à l'API INSEE
 
 ```bash
+cd apps/backend
 bun run db:test-insee
 ```
 
@@ -215,6 +245,8 @@ curl "http://localhost:3000/companies/stats/count?type=ESN"
 ## 🗄️ Gestion de la base de données
 
 ```bash
+cd apps/backend
+
 # Générer les migrations
 bun run db:generate
 
@@ -244,12 +276,12 @@ bun test
 ## 📋 TODO
 
 ### 🎨 Frontend
-- [ ] Créer l'interface utilisateur avec React
-- [ ] Intégrer une bibliothèque de cartes (Leaflet, Mapbox, Google Maps)
-- [ ] Implémenter les filtres dynamiques
+- [x] Créer l'interface utilisateur avec React
+- [x] Intégrer une bibliothèque de cartes (Leaflet)
+- [x] Implémenter les filtres dynamiques
 - [ ] Ajouter une barre de recherche avec autocomplétion
 - [ ] Créer des fiches détaillées pour chaque entreprise
-- [ ] Design responsive (mobile, tablet, desktop)
+- [ ] Design responsive amélioré (mobile, tablet, desktop)
 - [ ] Thème clair/sombre
 
 ### 📍 Géolocalisation
@@ -302,6 +334,21 @@ bun test
 
 ## 🛠️ Scripts disponibles
 
+### À la racine (monorepo)
+```bash
+# Développement
+bun run dev              # Démarrer frontend + backend en parallèle
+bun run dev:backend      # Démarrer seulement le backend
+bun run dev:frontend     # Démarrer seulement le frontend
+bun run build            # Build frontend + backend
+bun run start            # Démarrer en production
+
+# Tests & Qualité
+bun run lint             # Linter le code
+bun run format           # Formater le code
+```
+
+### Backend (`cd apps/backend`)
 ```bash
 # Développement
 bun run dev              # Démarrer en mode développement avec hot-reload
@@ -324,10 +371,16 @@ bun run docker:restart   # Redémarrer les conteneurs
 bun run docker:rebuild   # Reconstruire et redémarrer
 bun run docker:clean     # Nettoyer (supprime les volumes)
 
-# Tests & Qualité
+# Tests
 bun test                 # Lancer les tests
-bun run lint             # Linter le code
-bun run format           # Formater le code
+```
+
+### Frontend (`cd apps/frontend`)
+```bash
+# Développement
+bun run dev              # Démarrer en mode développement avec HMR
+bun run start            # Démarrer en production
+bun run build            # Build l'application
 ```
 
 ---
@@ -335,31 +388,57 @@ bun run format           # Formater le code
 ## 📁 Structure du projet
 
 ```
-MonTours/
-├── src/
-│   ├── config/           # Configuration (DB, env)
-│   │   ├── database.ts
-│   │   └── env.ts
-│   ├── modules/          # Modules métier
-│   │   ├── companies/    # Module entreprises
-│   │   │   ├── schema.ts # Schéma Drizzle
-│   │   │   ├── service.ts
-│   │   │   └── index.ts  # Routes
-│   │   └── health/       # Health check
-│   ├── plugins/          # Plugins Elysia
-│   │   └── logger.ts
-│   ├── scripts/          # Scripts utilitaires
-│   │   ├── seed.ts
-│   │   ├── import-insee.ts
-│   │   └── test-insee.ts
-│   └── index.ts          # Point d'entrée
-├── drizzle/              # Migrations Drizzle
-├── docker/               # Configuration Docker
-├── .env                  # Variables d'environnement
-├── docker-compose.yml    # Stack Docker
-├── drizzle.config.ts     # Config Drizzle Kit
-├── tsconfig.json         # Config TypeScript
-└── package.json          # Dépendances
+MonTours/                       # Racine du monorepo
+├── apps/
+│   ├── backend/                # Application backend
+│   │   ├── src/
+│   │   │   ├── config/         # Configuration (DB, env)
+│   │   │   │   ├── database.ts
+│   │   │   │   └── env.ts
+│   │   │   ├── modules/        # Modules métier
+│   │   │   │   ├── companies/  # Module entreprises
+│   │   │   │   │   ├── schema.ts
+│   │   │   │   │   ├── service.ts
+│   │   │   │   │   └── index.ts
+│   │   │   │   └── health/     # Health check
+│   │   │   ├── plugins/        # Plugins Elysia
+│   │   │   │   └── logger.ts
+│   │   │   ├── scripts/        # Scripts utilitaires
+│   │   │   │   ├── seed.ts
+│   │   │   │   ├── import-insee.ts
+│   │   │   │   └── test-insee.ts
+│   │   │   └── index.ts        # Point d'entrée
+│   │   ├── drizzle/            # Migrations Drizzle
+│   │   ├── docker/             # Configuration Docker
+│   │   ├── .env                # Variables d'environnement
+│   │   ├── docker-compose.yml
+│   │   ├── drizzle.config.ts
+│   │   ├── tsconfig.json
+│   │   └── package.json
+│   │
+│   └── frontend/               # Application frontend
+│       ├── src/
+│       │   ├── components/     # Composants React
+│       │   │   ├── Map.tsx     # Carte Leaflet
+│       │   │   ├── Filters.tsx # Filtres
+│       │   │   ├── Loading.tsx
+│       │   │   └── ErrorDisplay.tsx
+│       │   ├── hooks/          # Custom hooks
+│       │   │   └── useCompanies.ts
+│       │   ├── types.ts        # Types TypeScript
+│       │   ├── styles.css      # Styles globaux + Tailwind
+│       │   ├── App.tsx         # Composant principal
+│       │   ├── index.tsx       # Point d'entrée React
+│       │   └── server.tsx      # Serveur Bun
+│       ├── index.html          # Page HTML
+│       ├── tailwind.config.ts  # Config Tailwind
+│       ├── tsconfig.json
+│       └── package.json
+│
+├── package.json                # Package.json racine (workspace)
+├── bun.lock                    # Lockfile Bun
+├── README.md
+└── CLAUDE.md                   # Instructions pour Claude
 ```
 
 ---

@@ -1,0 +1,83 @@
+name: CI
+
+# Ce workflow se déclenche sur les push et les pull requests vers main
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Job 1: Tests et vérifications de code
+  test:
+    name: Tests & Code Quality
+    runs-on: ubuntu-latest
+
+    # Services Docker nécessaires (PostgreSQL pour les tests)
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: montours_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      # Étape 1: Récupérer le code du repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Étape 2: Installer Bun (runtime JavaScript ultra-rapide)
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Étape 3: Installer les dépendances du projet
+      - name: Install dependencies
+        run: bun install
+
+      # Étape 4: Vérifier le linting (qualité du code)
+      - name: Run linter
+        run: bun run lint
+        continue-on-error: true # Continue même si le lint échoue (pour l'instant)
+
+      # Étape 5: Vérifier le formatage du code
+      - name: Check code formatting
+        run: bun run format
+        continue-on-error: true # Continue même si le format échoue (pour l'instant)
+
+      # Étape 6: Lancer les tests
+      - name: Run tests
+        run: bun test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/montours_test
+          NODE_ENV: test
+
+      # Étape 7: Vérifier que le projet compile
+      - name: Build check
+        run: bun build ./src/index.ts --target=bun
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/montours_test
+          NODE_ENV: production
+
+  # Job 2: Vérification de la structure Docker (optionnel)
+  docker:
+    name: Docker Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Vérifier que le Dockerfile est valide
+      - name: Check Dockerfile
+        run: docker build --no-cache -t montours:ci .
+        continue-on-error: true # Pour ne pas bloquer si Docker échoue

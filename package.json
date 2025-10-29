@@ -1,29 +1,22 @@
 {
   "name": "montours",
   "version": "1.0.0",
-  "description": "API pour cartographier les entreprises IT de Tours",
-  "main": "src/index.ts",
+  "description": "Monorepo pour cartographier les entreprises IT de Tours",
+  "private": true,
+  "workspaces": [
+    "apps/backend",
+    "apps/frontend"
+  ],
   "scripts": {
-    "dev": "bun --watch src/index.ts",
-    "start": "bun src/index.ts",
-    "db:generate": "drizzle-kit generate:pg",
-    "db:migrate": "drizzle-kit push:pg",
-    "db:studio": "drizzle-kit studio",
-    "db:drop": "drizzle-kit drop",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "docker:restart": "docker-compose restart",
-    "docker:rebuild": "docker-compose down && docker-compose up -d --build",
-    "docker:clean": "docker-compose down -v",
-    "test": "bun test",
+    "dev": "bun run --filter '*' dev",
+    "dev:backend": "cd apps/backend && bun run dev",
+    "dev:frontend": "cd apps/frontend && bun run dev",
+    "build": "bun run --filter '*' build",
+    "start": "bun run --filter '*' start",
     "lint": "eslint .",
-    "format": "prettier --write .",
-    "db:seed": "bun src/scripts/seed.ts",
-    "db:import-insee": "bun src/scripts/import-insee.ts",
-    "db:test-insee": "bun src/scripts/test-insee.ts"
+    "format": "prettier --write ."
   },
-  "keywords": ["elysia", "bun", "api", "tours", "companies", "map"],
+  "keywords": ["elysia", "bun", "react", "leaflet", "tailwind", "api", "tours", "companies", "map"],
   "author": "",
   "license": "ISC"
 }
